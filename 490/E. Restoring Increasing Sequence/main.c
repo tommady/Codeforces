@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 
+typedef enum {false, true} bool;
+
 typedef struct data
 {
     int element[10];
@@ -45,11 +47,8 @@ int main()
                 sequence[i].element[j] = tmp_element[j] - '0';
         }
         sequence[i].mark_len = k;
-    }
-    
-    
-    for(i=0; i<n; i++)
-    {
+        
+        // start considering logic.
         for(j=0; j<sequence[i].mark_len; j++)
         {
             int mark_pos = sequence[i].mark_pos[j];
@@ -84,45 +83,23 @@ int main()
                         return 1;
                     }
                 }
-                else if(mark_pos == sequence[i].elem_len-1)
-                {
-                    // 12226
-                    // 1222?    ? should be 7.
-                    if(sequence[i].element[mark_pos-1] == sequence[i-1].element[mark_pos-1])
-                    {
-                        sequence[i].element[mark_pos] = sequence[i-1].element[mark_pos] + 1;
-                    }
-                    // 12226
-                    // 1223?    ?should be 0.
-                    else if(sequence[i].element[mark_pos-1] > sequence[i-1].element[mark_pos-1])
-                    {
-                        sequence[i].element[mark_pos] = 0;
-                    }
-                    else
-                    {
-                        printf("under mark_pos = last, ERROR!\n");
-                        return 1;
-                    }
-                }
                 else
                 {
-                    // 184321
-                    // 2?7999   ? should be 0.
-                    if(sequence[i].element[mark_pos-1] > sequence[i-1].element[mark_pos-1])
+                    bool found = false;
+                    
+                    for(k=0; k<mark_pos; k++)
                     {
-                        sequence[i].element[mark_pos] = 0;
+                        if(sequence[i].element[k] > sequence[i-1].element[k])
+                        {
+                            sequence[i].element[mark_pos] = 0;
+                            found = true;
+                            break;
+                        }
                     }
-                    // 184321       184321
-                    // 1?4789   or  1?5789  ? all should be 8.
-                    else if(sequence[i].element[mark_pos+1] >= sequence[i-1].element[mark_pos+1])
+                    
+                    if(!found)
                     {
-                        sequence[i].element[mark_pos] = sequence[i-1].element[mark_pos];
-                    }
-                    // 184321
-                    // 1?3111   ? should be 9.
-                    else if(sequence[i].element[mark_pos+1] < sequence[i-1].element[mark_pos+1])
-                    {
-                        if(sequence[i].element[mark_pos+1] == -1)
+                        if(sequence[i].element[mark_pos]==-1 && mark_pos!=sequence[i].elem_len-1)
                         {
                             sequence[i].element[mark_pos] = sequence[i-1].element[mark_pos];
                         }
@@ -130,11 +107,6 @@ int main()
                         {
                             sequence[i].element[mark_pos] = sequence[i-1].element[mark_pos] + 1;
                         }
-                    }
-                    else
-                    {
-                        printf("under mark_pos = middle, ERROR!\n");
-                        return 1;
                     }
                 }
             }
